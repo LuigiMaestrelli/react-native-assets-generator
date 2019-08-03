@@ -10,9 +10,13 @@ export default class ZipCreator {
   private files: string[];
 
   private output: string;
+  private fileName: string;
 
   public constructor(config: Config) {
     this.files = config.files;
+
+    const sufix = new Date().getTime();
+    this.fileName = `${config.name}-${sufix}.zip`;
 
     this.output = path.join(
       __dirname,
@@ -21,7 +25,7 @@ export default class ZipCreator {
       '..',
       'tmp',
       'output',
-      `${config.name}.zip`
+      this.fileName
     );
   }
 
@@ -39,7 +43,7 @@ export default class ZipCreator {
           return;
         }
 
-        resolve(this.output);
+        resolve(this.fileName);
       });
     });
   }
