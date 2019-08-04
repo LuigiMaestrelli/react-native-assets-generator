@@ -2,17 +2,24 @@
   "name": "react-native-assets-generator",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
-    "@material-ui/core": "^4.3.0",
+    "@material-ui/core": "^4.3.1",
     "@material-ui/icons": "^4.2.1",
     "axios": "^0.19.0",
-    "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
     "react-color": "^2.17.3",
-    "react-dropzone": "^10.1.6",
+    "react-dom": "^16.8.6",
+    "react-dropzone": "^10.1.7",
     "react-scripts": "3.0.1",
     "react-spinners": "^0.5.13",
+    "styled-components": "^4.3.2",
     "typeface-roboto": "^0.0.75"
   },
   "devDependencies": {
@@ -20,13 +27,6 @@
     "eslint-plugin-react": "^7.14.3",
     "prettier": "^1.18.2",
     "source-map-explorer": "^2.0.1"
-  },
-  "scripts": {
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [
