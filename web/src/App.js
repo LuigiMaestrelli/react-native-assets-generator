@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
-
+import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import ColorLens from '@material-ui/icons/ColorLens';
+
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import PulseLoader from 'react-spinners/PulseLoader';
 import ChromePicker from 'react-color/lib/components/chrome/Chrome';
 
@@ -29,11 +37,15 @@ import {
   TextField
 } from './styles';
 
+const API_URL = 'http://localhost:3333';
+
 class App extends Component {
   state = {
     isLoadingImage: false,
     imgTitle: 'Preview image',
     imgSource: imgPreview,
+    isImageSelected: false,
+    message: null,
 
     displayColorPicker: false,
 
@@ -42,6 +54,8 @@ class App extends Component {
     name: 'ic_icon',
     density: 300
   };
+
+  selectedImageFile = null;
 
   onDrop = acceptedFiles => {
     if (!acceptedFiles || acceptedFiles.length === 0) return;
@@ -61,11 +75,13 @@ class App extends Component {
     reader.onload = event => {
       this.setState({
         imgSource: event.target.result,
-        isLoadingImage: false
+        isLoadingImage: false,
+        isImageSelected: true
       });
     };
 
     reader.readAsDataURL(selectedFile);
+    this.selectedImageFile = selectedFile;
   };
 
   handleChange = name => event => {
@@ -77,12 +93,12 @@ class App extends Component {
       color: '#1976d2',
       baseSize: 56,
       name: 'ic_icon',
-      density: 300
+      density: 300,
+      imgSource: imgPreview,
+      isImageSelected: false
     });
-  };
 
-  handleGenerate = () => {
-    alert('Not done yet');
+    this.selectedImageFile = null;
   };
 
   handleCloseColorPicker = () => {
@@ -97,6 +113,51 @@ class App extends Component {
     this.setState({ displayColorPicker: true });
   };
 
+  handleGenerate = async () => {
+    if (!this.selectedImageFile) {
+      this.setState({
+        message: 'No image was selected'
+      });
+      return;
+    }
+
+    const { color, name, baseSize, density } = this.state;
+
+    const bodyFormData = new FormData();
+    bodyFormData.set('color', color);
+    bodyFormData.set('baseSize', baseSize);
+    bodyFormData.set('name', name);
+    bodyFormData.set('density', density);
+    bodyFormData.append('svgFile', this.selectedImageFile);
+
+    try {
+      const response = await axios({
+        method: 'post',
+        baseURL: API_URL,
+        url: '/upload',
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        data: bodyFormData
+      });
+
+      const fileName = response.data;
+
+      window.open(`${API_URL}/result/${fileName}`);
+    } catch (err) {
+      console.log(err);
+      this.setState({
+        message: 'Something went wrong while generating the imagens'
+      });
+    }
+  };
+
+  handleMsgClose = () => {
+    this.setState({
+      message: null
+    });
+  };
+
   render() {
     const {
       imgSource,
@@ -106,11 +167,32 @@ class App extends Component {
       name,
       baseSize,
       density,
-      displayColorPicker
+      displayColorPicker,
+      isImageSelected,
+      message
     } = this.state;
 
     return (
       <Container>
+        <Dialog
+          open={!!message}
+          onClose={this.handleMsgClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Attention</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {message}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleMsgClose} color="primary" autoFocus>
+              Ok
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Card>
           <ConfigPanel>
             <Title>Settings</Title>
@@ -201,6 +283,7 @@ class App extends Component {
                   title={imgTitle}
                   src={imgSource}
                   alt="Preview"
+                  isSelected={isImageSelected}
                 />
               )}
             </PreviewContainer>

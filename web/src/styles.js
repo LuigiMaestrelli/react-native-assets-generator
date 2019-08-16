@@ -83,6 +83,8 @@ export const ImagePreview = styled.img`
   height: 400px;
   align-self: center;
   justify-self: center;
+  border: ${props => (props.isSelected ? '1.5px #262a41 solid;' : 'none')};
+  border-radius: 10px;
 `;
 
 export const ButtonContainer = styled.div`

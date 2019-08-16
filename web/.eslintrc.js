@@ -24,7 +24,7 @@ module.exports = {
     semi: ['error', 'always'],
     'no-undef': ['error'],
     'no-var': ['error'],
-    'no-console': ['warn'],
+    'no-console': ['off'],
     'no-unused-vars': ['error'],
     'react/prop-types': ['warn'],
     'react/jsx-uses-vars': 'error'
